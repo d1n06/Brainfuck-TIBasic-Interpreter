@@ -1,0 +1,138 @@
+ClrHome
+
+" Input your code to a temporal variable
+Disp "Input your code"
+Input ":",Str3
+
+" If you input '0', the last code you ran will be used, or the one stored in the Str1 var if you changed it
+If Str3≠"0"
+Str3→Str1
+
+" L2 is the list containing the 'ids' of the brackets and is as long as your code
+{0}→L₂
+length(Str1)→dim(L₂)
+
+" L3 and L4 have the indexes of the open and close brackets (respectively)
+{0}→L₃
+{0}→L₄
+
+Disp "Checking errors..."
+
+" Str2 contains the 8 available symbols
+".,+-><[]"→Str2
+
+" N, M and K help track the brackets
+1→N
+1→M
+1→K
+
+" Iterate through the code
+For(I,1,length(Str1),1)
+
+" Str3 is the i-th char in the code
+sub(Str1,I,1)→Str3
+
+" If the char is not available, the code is wrong
+If inString(Str2,Str3)=0
+Then
+Disp "Wrong symbol","' ' at pos"
+Output(3,2,Str3)
+Output(3,12,I)
+Stop
+End
+
+" Add the open bracket to the lists
+If Str3="["
+Then
+N→L₂(I)
+N→K
+N+1→N
+augment(L₃,{I})→L₃
+End
+
+" Add the closed bracket to the lists
+If Str3="]"
+Then
+K→L₂(I)
+K-1→K
+M+1→M
+augment(L₄,{I})→L₄
+End
+
+End
+
+" The code is wrong if the number of open and closed brackets are different
+If N≠M
+Then
+Disp "Unmatched","brackets!"
+Stop
+End
+
+" Code is ok if the execution reaches here
+Disp "No wrong symbols","","Press enter to","run your code"
+Pause 
+
+ClrHome
+
+" L1 is the program's memory, with 32 entries
+32→dim(L₁)
+Fill(0,L₁)
+
+" J is the current memory pointer
+1→J
+
+" I is the current code pointer
+1→I
+
+" Iterate through the code
+While I≤length(Str1)
+
+" Str2 is the i-th symbol
+sub(Str1,I,1)→Str2
+
+" '.' displays the memory's current entry
+If Str2="."
+Disp L₁(J)
+
+" ',' overwrites the memory's current entry with the user's input
+If Str2=","
+Then
+Input T
+T→L₁(J)
+End
+
+" '+' adds one to the entry
+If Str2="+"
+L₁(J)+1→L₁(J)
+
+" '-' substracts one from the entry
+If Str2="-"
+L₁(J)-1→L₁(J)
+
+" '>' shifts the memory pointer to the right
+If Str2=">"
+Then
+J+1→J
+If J=33
+1→J
+End
+
+" '<' shifts the memory pointer to the left
+If Str2="<"
+Then
+J-1→J
+If J=0
+32→J
+End
+
+" '[' jumps to the corresponding ']' if the entry is 0
+If Str2="[" and L₁(J)=0
+L₄(L₂(I)+1)→I
+
+" ']' jumps to the corresponding '[' if the entry is not 0, making a loop
+If Str2="]" and L₁(J)≠0
+L₃(L₂(I)+1)→I
+
+" Next char
+I+1→I
+End
