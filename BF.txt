@@ -8,23 +8,17 @@ Input ":",Str3
 If Str3≠"0"
 Str3→Str1
 
-" L2 is the list containing the 'ids' of the brackets and is as long as your code
+" N helps keep track if there are too many or too few brackets
+0→N
+
+" L2 is the list showing where brackets are
 {0}→L₂
 length(Str1)→dim(L₂)
-
-" L3 and L4 have the indexes of the open and close brackets (respectively)
-{0}→L₃
-{0}→L₄
 
 Disp "Checking errors..."
 
 " Str2 contains the 8 available symbols
-".,+-><[]"→Str2
-
-" N, M and K help track the brackets
-1→N
-1→M
-1→K
+".,+-><{}"→Str2
 
 " Iterate through the code
 For(I,1,length(Str1),1)
@@ -41,28 +35,22 @@ Output(3,12,I)
 Stop
 End
 
-" Add the open bracket to the lists
-If Str3="["
+If Str3="{"
 Then
-N→L₂(I)
-N→K
 N+1→N
-augment(L₃,{I})→L₃
+1→L₂(I)
 End
 
-" Add the closed bracket to the lists
-If Str3="]"
+If Str3="}"
 Then
-K→L₂(I)
-K-1→K
-M+1→M
-augment(L₄,{I})→L₄
+N-1→N
+­1→L₂(I)
 End
 
 End
 
 " The code is wrong if the number of open and closed brackets are different
-If N≠M
+If N≠0
 Then
 Disp "Unmatched","brackets!"
 Stop
@@ -125,13 +113,48 @@ If J=0
 32→J
 End
 
-" '[' jumps to the corresponding ']' if the entry is 0
-If Str2="[" and L₁(J)=0
-L₄(L₂(I)+1)→I
+" '{' jumps to the corresponding '}' if the entry is 0
+" Fuck this method to do loops
+If Str2="{" and L₁(J)=0
+Then
+I+1→K
+0→N
+While K≤length(Str1)
+If L₂(K)=1
+N+1→N
+If L₂(K)=­1
+Then
+If N=0
+Then
+K→I
+length(Str1)+1→K
+End
+N-1→N
+End
+K+1→K
+End
+End
 
-" ']' jumps to the corresponding '[' if the entry is not 0, making a loop
-If Str2="]" and L₁(J)≠0
-L₃(L₂(I)+1)→I
+" '}' jumps to the corresponding '{' if the entry is not 0, making a loop
+If Str2="}" and L₁(J)≠0
+Then
+I-1→K
+0→N
+While K≥0
+If L₂(K)=­1
+N+1→N
+If L₂(K)=1
+Then
+If N=0
+Then
+K→I
+­1→K
+End
+N-1→N
+End
+K-1→K
+End
+End
 
 " Next char
 I+1→I
